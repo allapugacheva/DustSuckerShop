@@ -5,12 +5,15 @@ import Qt5Compat.GraphicalEffects
 Rectangle {
 
     id: root
-    // width: 800
-    // height: 50
 
     Style { id: style }
 
     property var borderWidth: (parent.height / 50 > 0) ? 1 : parent.height / 50
+
+    Loader {
+        id: dialogLoader
+        source: ""
+    }
 
     Rectangle {
         width: parent.width
@@ -117,6 +120,15 @@ Rectangle {
                 height: parent.height * 0.9
                 width: parent.height * 0.9
                 source: "file:///D:/DustSuckerShop/images/profile.png"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.log("clicked")
+                    dialogLoader.source = "RegistrationWindow.qml"
+                    dialogLoader.item.open()
+                }
             }
         }
 

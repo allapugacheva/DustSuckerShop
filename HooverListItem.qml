@@ -114,7 +114,6 @@ Rectangle {
             height: parent.height / 11
             width: parent.width / 1.5
             text: price
-            font.family: style.fontFamily
             font.pointSize: parent.width / 17
             font.bold: true
             anchors.horizontalCenter: parent.horizontalCenter

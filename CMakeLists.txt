@@ -28,6 +28,7 @@ qt_add_qml_module(appDustSuckerShop
         QML_FILES OrangeComboBox.qml
         QML_FILES Style.qml
         QML_FILES MainWindow.qml
+        QML_FILES RegistrationWindow.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

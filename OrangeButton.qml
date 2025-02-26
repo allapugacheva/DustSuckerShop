@@ -7,8 +7,7 @@ Button {
 
     Style { id: style }
 
-    // property color backgroundDefaultColor: "orange"
-    // property color backgroundPressedColor: Qt.darker(backgroundDefaultColor, 0.9)
+    font.family: style.fontFamily
 
     background: Rectangle {
         color: but.pressed ? style.primaryColor : style.activeColor
@@ -20,7 +19,7 @@ Button {
         layer.effect: DropShadow {
             transparentBorder: true
             color: style.borderColor
-            samples: 20
+            samples: 10
         }
     }
 }
