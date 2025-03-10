@@ -4,6 +4,8 @@ import Qt5Compat.GraphicalEffects
 
 Rectangle {
     id: comboRect
+    width: 100
+    height: 20
 
     Style { id: style }
 
@@ -26,6 +28,8 @@ Rectangle {
         height: parent.height
         anchors.fill: parent
         model: params
+        font.family: style.fontFamily
+        font.pointSize: parent.height * 0.3
 
         background: Rectangle {
             color: "white"
@@ -40,7 +44,8 @@ Rectangle {
             contentItem: Text {
                 text: modelData
                 color: "black"
-                font.pointSize: parent.width / 16
+                font.pointSize: parent.height * 0.3
+                font.family: style.fontFamily
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -54,7 +59,7 @@ Rectangle {
             model: comboBox.model
             clip: true
             implicitHeight: contentHeight
-            leftMargin: 10
+            leftMargin: comboRect.width * 0.05
 
             delegate: ItemDelegate {
                 width: comboBox.width - comboRect.width * 0.1
@@ -62,7 +67,8 @@ Rectangle {
                 contentItem: Text {
                     text: modelData
                     color: "black"
-                    font.pixelSize: parent.width / 16
+                    font.family: style.fontFamily
+                    font.pointSize: parent.height * 0.3
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -71,7 +77,6 @@ Rectangle {
                     color: style.lightColor
                 }
                 onClicked: {
-
                     comboBox.currentIndex = index
                     comboBox.popup.close()
                 }

@@ -5,12 +5,13 @@ import "."
 Item {
 
     id: window
+    objectName: "MainWindow"
     property var params: ["Бренд:", "Тип:"]
-    property var paramsValues: [["хуесос", "пиздосос"], ["ручной", "на цепи", "сосунец", "промышленный"]]
+    property var paramsValues: [["Dyson", "Karcher"], ["ручной", "автомобильный", "робот", "промышленный"]]
     property var sortParams: ["По цене ↑", "По цене ↓", "По дате выпуска ↑", "По дате выпуска ↓"]
 
-    property var itemsList: [[3, "Сосунец 228", "666,00 р."], [2, "Сосунец 1", "0,00 р."], [5, "Сосунчик", "69,00 р."],
-                             [4, "Сосатель", "5,00 р."], [1, "Сосалка", "1,00 р."]]
+    property var itemsList: [[3, "Dyson", "666,00 р."], [2, "Karcher", "0,00 р."], [5, "Dyson", "69,00 р."],
+                             [4, "Dyson", "5,00 р."], [1, "Karcher", "1,00 р."]]
 
     Column {
         width: parent.width
@@ -18,7 +19,8 @@ Item {
 
         MenuBar {
             width: parent.width
-            height: parent.width / 25
+            regWinX: parent.width / 2 - 225
+            regWinY: parent.height / 2 - 187.5
         }
 
         Row {
@@ -44,7 +46,6 @@ Item {
                         padding: paramRect.width * 0.04
 
                         OrangeComboBox {
-
                             width: parent.width
                             height: parent.width * 0.15
                             params: sortParams
@@ -57,6 +58,7 @@ Item {
                                 param: params[index]
                                 paramList: paramsValues[index]
                                 width: parent.width
+                                //height: paramsValues[index].length * parent.width * 0.25
                             }
                         }
 
@@ -89,7 +91,7 @@ Item {
                         padding: itemsRect.width * 0.015
 
                         Repeater {
-                            model: 5
+                            model: itemsList.length
 
                             HooverListItem {
                                 width: window.width / 6.5 - grid.columnSpacing
@@ -98,6 +100,14 @@ Item {
                                 stars: itemsList[index][0]
                                 name: itemsList[index][1]
                                 price: itemsList[index][2]
+
+                                MouseArea {
+                                    anchors.fill: parent
+
+                                    onClicked: {
+                                        stackView.replace("HooverDetailWindow.qml");
+                                    }
+                                }
                             }
                         }
                     }

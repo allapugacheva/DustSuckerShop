@@ -2,6 +2,8 @@ import QtQuick
 
 Canvas {
     property bool fillStar: true
+    width: 20
+    height: 20
 
     Style { id: style }
 

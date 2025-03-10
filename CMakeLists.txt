@@ -30,6 +30,16 @@ qt_add_qml_module(appDustSuckerShop
         QML_FILES MainWindow.qml
         QML_FILES RegistrationWindow.qml
         QML_FILES ExtendedHooverListItem.qml
+        QML_FILES WishlistWindow.qml
+        QML_FILES FinishBuyItem.qml
+        QML_FILES HooverCartItem.qml
+        QML_FILES OrangeCounter.qml
+        QML_FILES CartWindow.qml
+        QML_FILES HooverDetailWindow.qml
+        QML_FILES ScrollableImage.qml
+        QML_FILES Comment.qml
+        QML_FILES AddHooverWindow.qml
+        QML_FILES OrangeTextInput.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

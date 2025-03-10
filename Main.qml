@@ -9,8 +9,9 @@ Window {
     visible: true
     title: qsTr("Dust Sucker Shop")
 
-    MainWindow {
-        width: parent.width
-        height: parent.height
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: "MainWindow.qml"
     }
 }

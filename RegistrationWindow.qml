@@ -3,16 +3,13 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import "."
 
-Dialog {
+Popup {
 
     modal: true
     width: 450
     height: (width * 5) / 6
 
     Style { id: style }
-
-    x: (Screen.width - width) / 2
-    y: (Screen.height - height) / 2
 
     background: Rectangle {
         color: "white"

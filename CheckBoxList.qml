@@ -3,8 +3,8 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 
 Rectangle {
-    // width: 200
-    height: (paramList.length + 1) * (width / 8) + (paramList.length + 2) * (width / 24)
+    width: 200
+    height: col.implicitHeight
 
     Style { id: style }
 
@@ -25,15 +25,15 @@ Rectangle {
     Column {
         id: col
         width: parent.width
-        height: parent.height
-        spacing: parent.width / 24
-        padding: parent.width / 24
+        //height: parent.height
+        spacing: parent.width * 0.01
+        padding: parent.width * 0.03
         anchors.centerIn: parent
 
         Text {
             text: param
             font.family: style.fontFamily
-            font.pointSize: parent.width / 14
+            font.pointSize: parent.width * 0.06
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -44,7 +44,7 @@ Rectangle {
 
             OrangeCheckBox {
                 width: col.width
-                height: col.width / 8
+                height: width * 0.15
                 text: modelData
             }
         }

@@ -2,6 +2,8 @@ import QtQuick
 
 Canvas {
     id: heart
+    width: 20
+    height: 20
     property bool fillHeart: true
 
     Style { id: style }

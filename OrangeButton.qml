@@ -4,6 +4,8 @@ import Qt5Compat.GraphicalEffects
 
 Button {
     id: but
+    width: 100
+    height: 30
 
     Style { id: style }
 
@@ -13,7 +15,7 @@ Button {
         color: but.pressed ? style.primaryColor : style.activeColor
         radius: parent.width * 0.1
         border.color: style.borderColor
-        border.width: parent.width * 0.01
+        border.width: parent.width * 0.005
 
         layer.enabled: true
         layer.effect: DropShadow {

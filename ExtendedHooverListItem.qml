@@ -8,7 +8,6 @@ Rectangle {
     Style { id: style }
     property real hoverFactor: 1
 
-    property int stars: 3
     property string name: "Сосунец 228"
     property string price: "666,00 р."
     property string model: "V11 Absolute"
@@ -17,11 +16,12 @@ Rectangle {
     property string bagType: "многоразовый"
     property string cleanType: "сухая"
     property string powerType: "аккумулятор"
+    property int stars: 3
     property int reviews: 6
 
     id: root
 
-    width: 700
+    // width: 700
     height: (width / 7) * 2
 
     border.color: style.borderColor
@@ -30,8 +30,8 @@ Rectangle {
     z: 0
 
     transform: Scale {
-        origin.x: 100
-        origin.y: 175
+        origin.x: width / 2
+        origin.y: height /2
         xScale: hoverFactor
         yScale: hoverFactor
     }

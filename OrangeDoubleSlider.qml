@@ -5,8 +5,8 @@ import Qt5Compat.GraphicalEffects
 Rectangle {
 
     id: root
-    // width: 200
-    // height: 120
+    width: 200
+    height: 120
 
     Style { id: style }
 

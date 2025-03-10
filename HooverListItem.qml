@@ -5,6 +5,8 @@ import "."
 
 Rectangle {
 
+    width: 80
+    height: 100
     Style { id: style }
     property real hoverFactor: 1
 
