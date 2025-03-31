@@ -13,6 +13,8 @@ Rectangle {
 
     property int count
 
+    signal deleteClicked()
+
     border.color: style.borderColor
     border.width: width * 0.005
     radius: width * 0.1
@@ -53,6 +55,7 @@ Rectangle {
                 if (count > 1) {
                     count--;
                 }
+                else deleteClicked()
             }
         }
 

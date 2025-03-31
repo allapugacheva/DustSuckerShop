@@ -14,6 +14,9 @@ Rectangle {
 
     property string param: ""
     property var paramList: []
+    property var selected: []
+
+    signal selChanged()
 
     layer.enabled: true
     layer.effect: DropShadow {
@@ -46,6 +49,21 @@ Rectangle {
                 width: col.width
                 height: width * 0.15
                 text: modelData
+
+                onCheckedChanged: {
+
+                    var index = selected.indexOf(text);
+                    if(checked) {
+                        if (index === -1)
+                            selected.push(text)
+                    }
+                    else {
+                        if (index !== -1)
+                            selected.splice(index, 1);
+                    }
+
+                    selChanged()
+                }
             }
         }
     }

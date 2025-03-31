@@ -12,6 +12,8 @@ Rectangle {
 
     property double cost: 1234.56
 
+    signal buy()
+
     border.color: style.borderColor
     border.width: height * 0.007
     radius: width * 0.05
@@ -56,6 +58,8 @@ Rectangle {
             text: "Оформить"
             font.pointSize: parent.width * 0.05
             anchors.horizontalCenter: parent.horizontalCenter
+
+            onClicked: buy()
         }
     }
 }

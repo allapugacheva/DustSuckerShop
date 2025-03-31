@@ -13,8 +13,11 @@ Rectangle {
     property double cost
     property bool available
     property int countBuys
+    property string imageSrc
 
     Style { id: style }
+
+    signal deleteHooverClicked()
 
     border.color: style.borderColor
     border.width: height * 0.005
@@ -42,7 +45,7 @@ Rectangle {
             radius: parent.height * 0.1
 
             Image {
-                source: "file:///D:/DustSuckerShop/images/dust.png"
+                source: imageSrc
                 width: parent.height * 0.9
                 height: parent.height * 0.9
                 anchors.centerIn: parent
@@ -57,10 +60,11 @@ Rectangle {
 
             Text {
                 width: parent.width
-                height: parent.height / 10
+                height: contentHeight
                 text: name
                 font.family: style.fontFamily
                 font.pointSize: parent.height * 0.09
+                wrapMode: Text.Wrap
             }
 
             Text {
@@ -82,6 +86,8 @@ Rectangle {
                 id: counter
                 width: parent.width / 2
                 count: countBuys
+
+                onDeleteClicked: deleteHooverClicked()
             }
 
             Text {

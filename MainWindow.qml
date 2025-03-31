@@ -6,21 +6,75 @@ Item {
 
     id: window
     objectName: "MainWindow"
-    property var params: ["Бренд:", "Тип:"]
-    property var paramsValues: [["Dyson", "Karcher"], ["ручной", "автомобильный", "робот", "промышленный"]]
-    property var sortParams: ["По цене ↑", "По цене ↓", "По дате выпуска ↑", "По дате выпуска ↓"]
+    property var params: ["Тип:", "Тип питания:", "Тип уборки:"]
+    property var paramsValues: [["Классический", "Автомобильный", "Робот-пылесос", "Вертикальный", "Промышленный"],
+                                ["Аккумулятор", "Источник питания", "Комбинированный"],
+                                ["Сухая", "Моющая", "Аквафильтр"]]
+    property var sortParams: ["По цене ↑", "По цене ↓"]
 
-    property var itemsList: [[3, "Dyson", "666,00 р."], [2, "Karcher", "0,00 р."], [5, "Dyson", "69,00 р."],
-                             [4, "Dyson", "5,00 р."], [1, "Karcher", "1,00 р."]]
+    property string findTxt
+
+    property string userEmail
+
+    property var itemsList: []
+
+    function getHoovers(val) {
+        var request = new XMLHttpRequest();
+        var requestString = "http://dustsucker.tonitrusbn.ru/api/Advertisement";
+
+        if (comboBox.currentText === "По цене ↑")
+            requestString += "?sortedBy=costDescending"
+        else
+            requestString += "?sortedBy=costAscending"
+
+        if (typeCB.selected.length !== 0)
+            requestString += "&HooverType=" + typeCB.selected.join(", ")
+
+        if (powerCB.selected.length !== 0)
+            requestString += "&PowerType=" + powerCB.selected.join(", ")
+
+        if (cleanCB.selected.length !== 0)
+            requestString += "&CleaningType=" + cleanCB.selected.join(", ")
+
+        requestString += "&MinCost=" + priceDS.from + "&MaxCost=" + priceDS.to
+
+        if (val.length !== 0)
+            requestString += "&Brand=" + val
+
+        console.log(requestString)
+
+        request.open("GET", requestString);
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+                itemsList = JSON.parse(request.responseText);
+            }
+        }
+        request.send();
+    }
+
+    Component.onCompleted: {
+        getHoovers(findTxt)
+    }
 
     Column {
         width: parent.width
         height: parent.height
 
         MenuBar {
+            id: mb
             width: parent.width
             regWinX: parent.width / 2 - 225
             regWinY: parent.height / 2 - 187.5
+            z: 1
+
+            onFindClicked: {
+                console.log(mb.findText)
+                if (findTxt.length === 0)
+                    getHoovers(mb.findText)
+                else
+                    findTxt = ""
+            }
         }
 
         Row {
@@ -37,7 +91,7 @@ Item {
 
                 ScrollView {
                     width: parent.width * 1.1
-                    height: parent.height * 1.1
+                    height: parent.height * 0.9
 
                     Column {
                         width: paramRect.width
@@ -46,26 +100,51 @@ Item {
                         padding: paramRect.width * 0.04
 
                         OrangeComboBox {
+                            id: comboBox
                             width: parent.width
                             height: parent.width * 0.15
                             params: sortParams
-                        }
 
-                        Repeater {
-                            model: params.length
-
-                            CheckBoxList {
-                                param: params[index]
-                                paramList: paramsValues[index]
-                                width: parent.width
-                                //height: paramsValues[index].length * parent.width * 0.25
+                            onSelectionChanged: {
+                                console.log(comboBox.currentText)
+                                getHoovers("");
                             }
                         }
 
+                        CheckBoxList {
+                            id: typeCB
+                            param: params[0]
+                            paramList: paramsValues[0]
+                            width: parent.width
+
+                            onSelChanged: getHoovers("")
+                        }
+
+                        CheckBoxList {
+                            id: powerCB
+                            param: params[1]
+                            paramList: paramsValues[1]
+                            width: parent.width
+
+                            onSelChanged: getHoovers("")
+                        }
+
+                        CheckBoxList {
+                            id: cleanCB
+                            param: params[2]
+                            paramList: paramsValues[2]
+                            width: parent.width
+
+                            onSelChanged: getHoovers("")
+                        }
+
                         OrangeDoubleSlider {
+                            id: priceDS
                             width: parent.width
                             height: parent.width / 2
-                            param: "Промилли:"
+                            param: "Цена:"
+
+                            onFromToChanged: getHoovers("")
                         }
                     }
                 }
@@ -78,36 +157,96 @@ Item {
 
                 ScrollView {
                     width: parent.width
-                    height: parent.height
+                    height: parent.height * 0.9
+                    padding: window.width * 0.005
 
-                    Grid {
+                    ListView {
                         id: grid
-                        rows: 4
-                        columns: 3
-                        rowSpacing: window.width * 0.01
-                        columnSpacing: window.width * 0.01
+                        spacing: window.width * 0.01
                         width: itemsRect.width
                         height: itemsRect.height
-                        padding: itemsRect.width * 0.015
+                        model: itemsList
 
-                        Repeater {
-                            model: itemsList.length
+                        delegate: ExtendedHooverListItem {
+                            width: grid.width * 0.95
 
-                            HooverListItem {
-                                width: window.width / 6.5 - grid.columnSpacing
-                                height: width * 1.6 - grid.rowSpacing
+                            name: modelData.title
+                            price: modelData.cost
+                            model: modelData.hoover.model
+                            vendor: modelData.hoover.brand
+                            type: modelData.hoover.type
+                            bagType: modelData.hoover.dustBagType
+                            cleanType: modelData.hoover.cleaningType
+                            powerType: modelData.hoover.powerType
+                            stars: modelData.hoover.rating
+                            reviews: modelData.hoover.amountReviews
+                            imageSrc: modelData.imageUrls[0]
 
-                                stars: itemsList[index][0]
-                                name: itemsList[index][1]
-                                price: itemsList[index][2]
+                            onBuyClicked: {
 
-                                MouseArea {
-                                    anchors.fill: parent
+                                if (GlobalData.isLogged) {
 
-                                    onClicked: {
-                                        stackView.replace("HooverDetailWindow.qml");
+                                    var request = new XMLHttpRequest()
+                                    request.open("PATCH", "http://dustsucker.tonitrusbn.ru/api/User/cart-add/" + GlobalData.userEmail + "/" + modelData.title)
+                                    request.setRequestHeader("Content-Type", "application/json")
+
+                                    request.onreadystatechange = function() {
+                                        if (request.readyState === XMLHttpRequest.DONE) {
+                                            success.open()
+                                        }
                                     }
+
+                                    request.send()
                                 }
+                                else {
+                                    loginErr.open()
+                                }
+
+                            }
+
+                            onShowClicked: {
+                                stackView.replace("HooverDetailWindow.qml", {
+                                                    hooverId: modelData.hoover.id,
+                                                    imagesLinks: modelData.imageUrls,
+                                                    cost: modelData.cost,
+                                                    hooverTitle: modelData.title
+                                                  })
+                            }
+                        }
+
+                        Dialog {
+                            id: loginErr
+                            title: "Ошибка"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Не выполнен вход в аккаунт"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Dialog {
+                            id: success
+                            title: "Успех"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Товар добавлен в корзину"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
                             }
                         }
                     }

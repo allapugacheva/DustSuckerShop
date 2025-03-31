@@ -7,9 +7,41 @@ Item {
     id: window
     objectName: "CartWindow"
 
-    property var itemsList: [["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 2], ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 1],
-                             ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 2], ["Dyson", 666.0, true, 1]]
-    property double totalCost: 0
+    //property var itemsList: [["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 2], ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 1],
+    //                         ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 1], ["Dyson", 666.0, true, 2], ["Dyson", 666.0, true, 1]]
+    property double totalCost: itemsList ? itemsList.reduce((sum, item) => sum + item.cost, 0) : 0
+
+    property var itemsList
+
+    function getHoovers() {
+
+        var request = new XMLHttpRequest();
+        var requestString = "http://dustsucker.tonitrusbn.ru/api/User/cart-short/" + GlobalData.userEmail;
+
+        request.open("GET", requestString);
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+                itemsList = JSON.parse(request.responseText);
+            }
+        }
+        request.send();
+    }
+
+    Component.onCompleted: {
+
+        getHoovers()
+    }
+
+    function countCost() {
+        totalCost = 0;
+        for (let i = 0; i < repeater.count; i++) {
+            let item = repeater.itemAt(i);
+            if (item) {
+                totalCost += item.cost * item.countBuys;
+            }
+        }
+    }
 
     Column {
         width: parent.width
@@ -40,23 +72,30 @@ Item {
 
                     Repeater {
                         id: repeater
-                        model: itemsList.length
+                        model: itemsList
 
                         HooverCartItem {
                             width: (window.width / 2.5) * 0.95
-                            name: itemsList[index][0]
-                            cost: itemsList[index][1]
-                            available: itemsList[index][2]
-                            countBuys: itemsList[index][3]
+                            name: itemsList[index].title
+                            cost: itemsList[index].cost
+                            available: itemsList[index].status === "active"
+                            imageSrc: itemsList[index].mainImageUrl
+                            countBuys: 1
 
-                            onCountBuysChanged: {
-                                totalCost = 0;
-                                for (let i = 0; i < repeater.count; i++) {
-                                    let item = repeater.itemAt(i);
-                                    if (item) {
-                                        totalCost += itemsList[index][1] * item.countBuys;
+                            onCountBuysChanged: countCost()
+
+                            onDeleteHooverClicked: {
+                                var request = new XMLHttpRequest()
+                                request.open("PATCH", "http://dustsucker.tonitrusbn.ru/api/User/cart-remove/" + GlobalData.userEmail + "/" + itemsList[index].title)
+                                request.setRequestHeader("Content-Type", "application/json")
+
+                                request.onreadystatechange = function() {
+                                    if (request.readyState === XMLHttpRequest.DONE) {
+                                        getHoovers()
                                     }
                                 }
+
+                                request.send()
                             }
                         }
                     }
@@ -67,6 +106,46 @@ Item {
                 width: window.width / 5
                 cost: totalCost
                 y: parent.width * 0.005
+
+                onBuy: {
+
+                    for (let i = 0; i <  itemsList.length; i++) {
+                        var request = new XMLHttpRequest()
+                        console.log("http://dustsucker.tonitrusbn.ru/api/User/cart-remove/" + GlobalData.userEmail + "/" + itemsList[i].title)
+
+                        request.open("PATCH", "http://dustsucker.tonitrusbn.ru/api/User/cart-remove/" + GlobalData.userEmail + "/" + itemsList[i].title)
+                        request.setRequestHeader("Content-Type", "application/json")
+
+                        request.onreadystatechange = function() {
+                            if (request.readyState === XMLHttpRequest.DONE) {
+                                console.log("Ответ сервера:", request.status, request.responseText);
+                            }
+                        }
+
+                        request.send()
+                    }
+
+                    itemsList = []
+                    success.open()
+                }
+
+                Dialog {
+                    id: success
+                    title: "Успех"
+                    modal: true
+                    standardButtons: Dialog.Ok
+
+                    implicitWidth: 300
+                    implicitHeight: 150
+
+                    anchors.centerIn: window
+
+                    contentItem: Text {
+                        text: "Заказ успешно оформлен"
+                        font.pixelSize: 16
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                }
             }
         }
     }

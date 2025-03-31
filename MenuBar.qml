@@ -15,6 +15,9 @@ Rectangle {
     property var regWinX
     property var regWinY
 
+    property var findText: textEdit.text
+
+    signal findClicked()
 
     Loader {
         id: dialogLoader
@@ -49,7 +52,8 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    stackView.replace("MainWindow.qml")
+                    if (stackView.currentItem.objectName !== "MainWindow")
+                        stackView.replace("MainWindow.qml")
                 }
             }
         }
@@ -62,7 +66,8 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    stackView.replace("MainWindow.qml")
+                    if (stackView.currentItem.objectName !== "MainWindow")
+                        stackView.replace("MainWindow.qml")
                 }
             }
         }
@@ -90,6 +95,13 @@ Rectangle {
 
                 property string placeholderText: "Поиск..."
 
+                onTextChanged: {
+                    if (text.length === 0) {
+                        root.findText = ""
+                        findClicked()
+                    }
+                }
+
                 Text {
                     anchors.fill: parent
                     text: textEdit.placeholderText
@@ -106,34 +118,25 @@ Rectangle {
             height: parent.height - parent.height * 0.3
             width: parent.height - parent.height * 0.3
             source: "file:///D:/DustSuckerShop/images/find.png"
-        }
-
-        // Item {
-        //     width: parent.width * 0.02
-        //     height: borderWidth
-        // }
-
-        Rectangle {
-            height: parent.height - parent.height * 0.2
-            width: parent.height - parent.height * 0.2
-            border.width: borderWidth
-            border.color: style.borderColor
-            radius: parent.height * 0.1
-
-            // Image {
-            //     anchors.centerIn: parent
-            //     height: parent.height * 0.9
-            //     width: parent.height * 0.9
-            //     source: "file:///D:/DustSuckerShop/images/korzina.png"
-            // }
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (stackView.currentItem.objectName !== "AddHooverWindow")
-                        stackView.replace("AddHooverWindow.qml")
+                    console.log(textEdit.text)
+
+                    if (stackView.currentItem.objectName !== "MainWindow")
+                        stackView.replace("MainWindow.qml", { findTxt: textEdit.text })
+                    else {
+                        root.findText = textEdit.text
+                        findClicked()
+                    }
                 }
             }
+        }
+
+        Item {
+            width: parent.width * 0.02
+            height: borderWidth
         }
 
         Rectangle {
@@ -147,14 +150,14 @@ Rectangle {
                 anchors.centerIn: parent
                 height: parent.height * 0.9
                 width: parent.height * 0.9
-                source: "file:///D:/DustSuckerShop/images/izbr.png"
+                source: "file:///D:/DustSuckerShop/images/plus.png"
             }
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (stackView.currentItem.objectName !== "WishlistWindow")
-                        stackView.replace("WishlistWindow.qml")
+                    if (stackView.currentItem.objectName !== "AddHooverWindow")
+                        stackView.replace("AddHooverWindow.qml")
                 }
             }
         }
@@ -201,9 +204,30 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (stackView.currentItem.objectName !== "CartWindow")
+                    if (stackView.currentItem.objectName !== "CartWindow" && GlobalData.isLogged)
                         stackView.replace("CartWindow.qml")
+                    else if (!GlobalData.isLogged)
+                        loginErr.open()
                 }
+            }
+        }
+
+        Dialog {
+            id: loginErr
+            title: "Ошибка"
+            modal: true
+            standardButtons: Dialog.Ok
+
+            implicitWidth: 300
+            implicitHeight: 150
+
+            x: regWinX
+            y: regWinY
+
+            contentItem: Text {
+                text: "Не выполнен вход в аккаунт"
+                font.pixelSize: 16
+                horizontalAlignment: Text.AlignHCenter
             }
         }
     }

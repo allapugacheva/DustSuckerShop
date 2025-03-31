@@ -16,7 +16,9 @@ Rectangle {
     property int to: max
 
     property int min: 0
-    property int max: 100
+    property int max: 5000
+
+    signal fromToChanged()
 
     border.width: parent.width * 0.005
     border.color: style.borderColor
@@ -86,6 +88,8 @@ Rectangle {
 
                             line.x = _from.x + root.width * 0.1
                             line.width = _to.x - _from.x
+
+                            fromToChanged()
                         }
                     }
                 }
@@ -114,6 +118,8 @@ Rectangle {
                             _to.x = ((to - max) * root.width * 0.65) / max + root.width * 0.70;
 
                             line.width = _to.x - _from.x;
+
+                            fromToChanged()
                         }
                     }
                 }
@@ -153,6 +159,8 @@ Rectangle {
 
                         line.x = _from.x + root.width * 0.1;
                         line.width = _to.x - _from.x;
+
+                        fromToChanged()
                     }
                 }
             }
@@ -194,6 +202,8 @@ Rectangle {
                             _to.z = 1
 
                         line.width = _to.x - _from.x;
+
+                        fromToChanged()
                     }
                 }
             }

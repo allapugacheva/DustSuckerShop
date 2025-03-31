@@ -6,31 +6,36 @@ Item {
 
     id: window
     objectName: "HooverDetailWindow"
-    // width: 800
-    // height: 600
 
     Style { id: style }
 
+    property var hooverId
+
+    property var hooverTitle
+
     property var imagesLinks: ["file:///D:/DustSuckerShop/images/dust.png"]
     property double cost: 666.0
-    property string brand: "Дусон"
-    property string model: "Сосунец 228"
-    property string type: "Вертикальный"
-    property string dustBagType: "Многоразовый"
-    property string cleaningType: "Сухая"
-    property string tubeType: "Телескопическая"
-    property double dustBagCapacity: 0.75
-    property string filterType: "Пылесборник"
-    property double powerConsumption: 0
-    property string powerType: "Аккумулятор"
-    property double batteryCapacity: 3000
-    property double batteryLife: 60
-    property double cableLength: 0
-    property double suctionPower: 600
-    property var nozzlesIncluded: ["Для ковров","Для шерсти"]
-    property double weight: 3
 
-    property var comments: [["Шлюха", 5, "Хорошо сосёт"], ["Гриша", 2, "фу бяка"], ["Тварь", 4, "имбочка, но не на 5"]]
+    property var comments: [["Алла", 5, "Хорошее качество"], ["Гриша", 2, "Не понравился"], ["Люда", 4, "Имбочка, но не на 5"]]
+
+    property var hoover
+
+    function getHoover() {
+
+        var request = new XMLHttpRequest();
+        var requestString = "http://dustsucker.tonitrusbn.ru/api/Hoover/" + hooverId;
+
+        request.open("GET", requestString);
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+                hoover = JSON.parse(request.responseText);
+            }
+        }
+        request.send();
+    }
+
+    Component.onCompleted: getHoover()
 
     Column {
         width: parent.width
@@ -56,7 +61,7 @@ Item {
                 Text {
                     width: parent.width
                     height: parent.height * 0.025
-                    text: brand + " " + model
+                    text: hoover.brand + " " + hoover.model
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.03
                     horizontalAlignment: Text.AlignHCenter
@@ -85,6 +90,60 @@ Item {
                         height: width * 0.2
                         text: "Купить"
                         font.pointSize: col.width * 0.03
+
+                        onClicked: {
+                            if (GlobalData.isLogged) {
+
+                                var request = new XMLHttpRequest()
+                                request.open("PATCH", "http://dustsucker.tonitrusbn.ru/api/User/cart-add/" + GlobalData.userEmail + "/" + window.hooverTitle)
+                                request.setRequestHeader("Content-Type", "application/json")
+
+                                request.onreadystatechange = function() {
+                                    if (request.readyState === XMLHttpRequest.DONE) {
+                                        success.open()
+                                    }
+                                }
+
+                                request.send()
+                            } else
+                                loginErr.open()
+                        }
+
+                        Dialog {
+                            id: loginErr
+                            title: "Ошибка"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Не выполнен вход в аккаунт"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Dialog {
+                            id: success
+                            title: "Успех"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Товар добавлен в корзину"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
                     }
                 }
 
@@ -102,91 +161,91 @@ Item {
                 }
 
                 Text {
-                    text: "Тип: " + type
+                    text: "Тип: " + hoover.type
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Тип пылесборника: " + dustBagType
+                    text: "Тип пылесборника: " + hoover.dustBagType
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Тип уборки: " + cleaningType
+                    text: "Тип уборки: " + hoover.cleaningType
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Тип трубы: " + tubeType
+                    text: "Тип трубы: " + hoover.tubeType
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Емкость пылесборника: " + dustBagCapacity
+                    text: "Емкость пылесборника: " + hoover.dustBagCapacity + " л."
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Тип фильтра: " + filterType
+                    text: "Тип фильтра: " + hoover.filterType
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Потребляемая мощность: " + powerConsumption
+                    text: "Потребляемая мощность: " + hoover.powerConsumption + " Вт."
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
-                    visible: powerConsumption != 0
+                    visible: hoover.powerConsumption !== 0
                 }
 
                 Text {
-                    text: "Тип питания: " + powerType
+                    text: "Тип питания: " + hoover.powerType
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
-                    text: "Емкость батареи: " + batteryCapacity
+                    text: "Емкость батареи: " + hoover.batteryCapacity + " мА/ч"
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
-                    visible: batteryCapacity != 0
+                    visible: hoover.batteryCapacity !== 0
                 }
 
                 Text {
-                    text: "Жизнь батареи: " + batteryLife
+                    text: "Жизнь батареи: " + hoover.batteryLife + " ч"
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
-                    visible: batteryLife != 0
+                    visible: hoover.batteryLife !== 0
                 }
 
                 Text {
-                    text: "Длина кабеля: " + cableLength
+                    text: "Длина кабеля: " + hoover.cableLength + " м"
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
-                    visible: cableLength != 0
+                    visible: hoover.cableLength !== 0
                 }
 
                 Text {
-                    text: "Мощность всасывания: " + suctionPower
+                    text: "Мощность всасывания: " + hoover.suctionPower + " Дж"
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
 
                 Text {
                     width: parent.width
-                    text: "Насадки в комплекте: " + nozzlesIncluded.join(", ")
+                    text: "Насадки в комплекте: " + hoover.nozzlesIncluded.join(", ")
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                     wrapMode: Text.Wrap
                 }
 
                 Text {
-                    text: "Вес: " + weight
+                    text: "Вес: " + hoover.weight + " кг"
                     font.family: style.fontFamily
                     font.pointSize: parent.width * 0.02
                 }
@@ -211,6 +270,7 @@ Item {
                     radius: parent.width * 0.01
 
                     TextInput {
+                        id: ti
                         width: parent.width
                         height: parent.height
                         anchors.fill: parent
@@ -219,6 +279,90 @@ Item {
                         font.pointSize: parent.width * 0.02
                         anchors.margins: parent.width * 0.01
                         clip: true
+
+                        onAccepted: {
+
+                            var pattern = /^[0-5] .*/;
+                            if (pattern.test(ti.text)) {
+
+                                var request = new XMLHttpRequest()
+                                request.open("PATCH", "http://dustsucker.tonitrusbn.ru/api/Hoover/" + hooverId + "/add-reviews")
+                                request.setRequestHeader("Content-Type", "application/json")
+
+                                request.onreadystatechange = function() {
+                                    if (request.readyState === XMLHttpRequest.DONE) {
+                                        console.log(request.status)
+
+                                        success2.open()
+                                    }
+                                }
+
+                                var data = {
+                                    "userEmail": GlobalData.userEmail,
+                                    "rating": ti.text[0],
+                                    "text": ti.text.substring(2)
+                                };
+
+                                request.send(JSON.stringify(data))
+                            } else if (!GlobalData.isLogged)
+                                errorLog.open()
+                            else
+                                error2.open()
+                        }
+
+                        Dialog {
+                            id: success2
+                            title: "Успех"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Отзыв добавлен"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Dialog {
+                            id: error2
+                            title: "Ошибка"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Отзыв должен соответствовать виду ОЦЕНКА ТЕКСТ_ОТЗЫВА"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Dialog {
+                            id: errorLog
+                            title: "Ошибка"
+                            modal: true
+                            standardButtons: Dialog.Ok
+
+                            implicitWidth: 300
+                            implicitHeight: 150
+
+                            anchors.centerIn: window
+
+                            contentItem: Text {
+                                text: "Войдите чтобы оставить отзыв"
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
                     }
                 }
 
@@ -229,13 +373,13 @@ Item {
                 }
 
                 Repeater {
-                    model: comments
+                    model: hoover.reviews
 
                     Comment {
                         width: parent.width
-                        name: modelData[0]
-                        stars: modelData[1]
-                        review: modelData[2]
+                        name: modelData.userEmail
+                        stars: modelData.rating
+                        review: modelData.text
                     }
                 }
             }

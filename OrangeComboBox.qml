@@ -10,6 +10,9 @@ Rectangle {
     Style { id: style }
 
     property var params: []
+    property var currentText: comboBox.currentText
+
+    signal selectionChanged()
 
     border.width: parent.width * 0.05
     border.color: style.borderColor
@@ -30,6 +33,10 @@ Rectangle {
         model: params
         font.family: style.fontFamily
         font.pointSize: parent.height * 0.3
+
+        onCurrentTextChanged: {
+            comboRect.selectionChanged()
+        }
 
         background: Rectangle {
             color: "white"

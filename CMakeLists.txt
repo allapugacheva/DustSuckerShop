@@ -4,13 +4,16 @@ project(DustSuckerShop VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2 Network QuickDialogs2 Widgets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(appDustSuckerShop
     main.cpp
 )
+
+set_source_files_properties(GlobalData.qml
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(appDustSuckerShop
     URI DustSuckerShop
@@ -30,7 +33,7 @@ qt_add_qml_module(appDustSuckerShop
         QML_FILES MainWindow.qml
         QML_FILES RegistrationWindow.qml
         QML_FILES ExtendedHooverListItem.qml
-        QML_FILES WishlistWindow.qml
+        QML_FILES
         QML_FILES FinishBuyItem.qml
         QML_FILES HooverCartItem.qml
         QML_FILES OrangeCounter.qml
@@ -40,6 +43,11 @@ qt_add_qml_module(appDustSuckerShop
         QML_FILES Comment.qml
         QML_FILES AddHooverWindow.qml
         QML_FILES OrangeTextInput.qml
+        QML_FILES GlobalData.qml
+        RESOURCES
+        SOURCES fileuploader.h fileuploader.cpp
+        SOURCES
+        SOURCES FileDialogHelper.h
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -54,7 +62,7 @@ set_target_properties(appDustSuckerShop PROPERTIES
 )
 
 target_link_libraries(appDustSuckerShop
-    PRIVATE Qt6::Quick Qt6::qtgraphicaleffectsplugin Qt6::QuickControls2
+    PRIVATE Qt6::Quick Qt6::qtgraphicaleffectsplugin Qt6::QuickControls2 Qt6::Network Qt6::QuickDialogs2 Qt6::Widgets
 )
 
 include(GNUInstallDirs)

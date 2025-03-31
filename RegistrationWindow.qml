@@ -5,6 +5,7 @@ import "."
 
 Popup {
 
+    id: window
     modal: true
     width: 450
     height: (width * 5) / 6
@@ -25,6 +26,11 @@ Popup {
         }
     }
 
+    function isValidEmail(email) {
+        var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailPattern.test(email);
+    }
+
     Column {
         width: parent.width
         height: parent.height
@@ -42,7 +48,7 @@ Popup {
         Text {
             width: parent.width / 1.5
             height: parent.height / 25
-            text: "Телефон/email:"
+            text: "Email:"
             font.family: style.fontFamily
             anchors.horizontalCenter: parent.horizontalCenter
             leftPadding: parent.width * 0.01
@@ -54,6 +60,7 @@ Popup {
             anchors.horizontalCenter: parent.horizontalCenter
 
             TextInput {
+                id: emailTI
                 anchors.fill: parent
                 font.family: style.fontFamily
                 leftPadding: parent.width * 0.03
@@ -87,6 +94,7 @@ Popup {
             anchors.horizontalCenter: parent.horizontalCenter
 
             TextInput {
+                id: passwordTI
                 anchors.fill: parent
                 font.family: style.fontFamily
                 leftPadding: parent.width * 0.03
@@ -121,6 +129,40 @@ Popup {
                 width: parent.width / 2.1
                 text: "Вход"
                 font.pointSize: parent.height / 3
+
+                onClicked: {
+
+                    if (passwordTI.text.length < 8)
+                        passErr.open()
+                    else if (!isValidEmail(emailTI.text))
+                        emailErr.open()
+                    else if (GlobalData.isLogged)
+                        loginErr.open()
+                    else {
+                        var request = new XMLHttpRequest()
+                        request.open("POST", "http://dustsucker.tonitrusbn.ru/api/Auth/login")
+                        request.setRequestHeader("Content-Type", "application/json")
+
+                        request.onreadystatechange = function() {
+                            if (request.readyState === XMLHttpRequest.DONE) {
+
+                                GlobalData.userEmail = emailTI.text
+                                GlobalData.isLogged = true
+
+                                success.open()
+
+                                window.close()
+                            }
+                        }
+
+                        var requestBody = {
+                            "email": emailTI.text,
+                            "password": passwordTI.text
+                        }
+
+                        request.send(JSON.stringify(requestBody))
+                    }
+                }
             }
 
             OrangeButton {
@@ -128,6 +170,115 @@ Popup {
                 width: parent.width / 2.1
                 text: "Регистрация"
                 font.pointSize: parent.height / 3
+
+                onClicked: {
+
+                    if (passwordTI.text.length < 8)
+                        passErr.open()
+                    else if (!isValidEmail(emailTI.text))
+                        emailErr.open()
+                    else if (GlobalData.isLogged)
+                        loginErr.open()
+                    else {
+                        var request = new XMLHttpRequest()
+                        request.open("POST", "http://dustsucker.tonitrusbn.ru/api/Auth/register")
+                        request.setRequestHeader("Content-Type", "application/json")
+
+                        request.onreadystatechange = function() {
+                            if (request.readyState === XMLHttpRequest.DONE) {
+
+                                GlobalData.userEmail = emailTI.text
+                                GlobalData.isLogged = true
+
+                                success.open()
+
+                                window.close()
+                            }
+                        }
+
+                        var requestBody = {
+                            "fullName": "fuck",
+                            "username": "fuck",
+                            "password": passwordTI.text,
+                            "email": emailTI.text,
+                            "phoneNumber": "fuck"
+                        }
+
+                        request.send(JSON.stringify(requestBody))
+                    }
+                }
+            }
+
+            Dialog {
+                id: passErr
+                title: "Ошибка"
+                modal: true
+                standardButtons: Dialog.Ok
+
+                implicitWidth: 300
+                implicitHeight: 150
+
+                anchors.centerIn: window
+
+                contentItem: Text {
+                    text: "Пароль меньше 8 символов!!!"
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+
+            Dialog {
+                id: emailErr
+                title: "Ошибка"
+                modal: true
+                standardButtons: Dialog.Ok
+
+                implicitWidth: 300
+                implicitHeight: 150
+
+                anchors.centerIn: window
+
+                contentItem: Text {
+                    text: "Некорректный email"
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+
+            Dialog {
+                id: loginErr
+                title: "Ошибка"
+                modal: true
+                standardButtons: Dialog.Ok
+
+                implicitWidth: 300
+                implicitHeight: 150
+
+                anchors.centerIn: window
+
+                contentItem: Text {
+                    text: "Вход уже осуществлён"
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+
+            Dialog {
+                id: success
+                title: "Успех"
+                modal: true
+                standardButtons: Dialog.Ok
+
+                implicitWidth: 300
+                implicitHeight: 150
+
+                anchors.centerIn: window
+
+                contentItem: Text {
+                    text: "Вход в аккаунт осуществлён"
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                }
             }
         }
     }

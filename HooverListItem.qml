@@ -13,6 +13,7 @@ Rectangle {
     property int stars: 3
     property string name: "Сосунец 228"
     property string price: "666,00 р."
+    property string imageSrc: "file:///D:/DustSuckerShop/images/dust.png"
 
     id: root
     border.color: style.borderColor
@@ -47,16 +48,6 @@ Rectangle {
         samples: 20
     }
 
-    Heart {
-        width: parent.width / 8
-        height: parent.width / 8
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.topMargin: parent.width / 12
-        anchors.rightMargin: parent.width / 12
-        z: 1
-    }
-
     Column {
         width: parent.width
         height: parent.height
@@ -73,7 +64,7 @@ Rectangle {
             radius: parent.width * 0.05
 
             Image {
-                source: "file:///D:/DustSuckerShop/images/dust.png"
+                source: imageSrc
                 anchors.fill: parent
                 anchors.margins: parent.width / 40
             }
@@ -87,29 +78,30 @@ Rectangle {
             Repeater {
                 model: stars
                 Star {
-                    width: root.width / 9
-                    height: root.width / 9
+                    width: root.width / 8.5
+                    height: root.width / 8.5
                 }
             }
             Repeater {
                 model: 5 - stars
                 Star {
-                    width: root.width / 9
-                    height: root.width / 9
+                    width: root.width / 8.5
+                    height: root.width / 8.5
                     fillStar: false
                 }
             }
         }
 
         Text {
-            height: parent.height / 16
+            height: parent.height / 8
             width: parent.width - parent.width / 10
             text: name
             font.family: style.fontFamily
-            font.pointSize: parent.width / 14
+            font.pointSize: parent.width / 17
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
             anchors.horizontalCenter: parent.horizontalCenter
+            wrapMode: Text.Wrap
         }
 
         OrangeButton {
